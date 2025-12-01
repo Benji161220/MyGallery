@@ -3,20 +3,17 @@ package com.example.mygallery
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.example.mygallery.fragments.GalleryFragment
 import com.example.mygallery.fragments.HomeFragment
-import com.example.mygallery.fragments.MessageFragment
-import com.example.mygallery.fragments.SpamFragment
-import com.example.mygallery.fragments.TrashFragment
+import com.example.mygallery.fragments.SlideshowFragment
 import com.google.android.material.navigation.NavigationView
-import com.example.mygallery.R
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -45,13 +42,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             navView.setCheckedItem(R.id.nav_home)
         }
 
-        // Setup Spinner in header
-        val headerView = navView.getHeaderView(0)
-        val spinner: Spinner = headerView.findViewById(R.id.email_spinner)
-        val emails = arrayOf("carladom@gmail.com", "alu123@ieselcaminas.org", "correocarla@gmail.es")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, emails)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -68,21 +68,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 title = "Home"
                 fragment = HomeFragment()
             }
-            R.id.nav_inbox -> {
-                title = "Inbox"
-                fragment = MessageFragment.newInstance(title)
+            R.id.nav_gallery -> {
+                title = "Gallery"
+                fragment = GalleryFragment()
             }
-            R.id.nav_outbox -> {
-                title = "Outbox"
-                fragment = MessageFragment.newInstance(title)
-            }
-            R.id.nav_trash -> {
-                title = "Trash"
-                fragment = TrashFragment()
-            }
-            R.id.nav_spam -> {
-                title = "Spam"
-                fragment = SpamFragment()
+            R.id.nav_slideshow -> {
+                title = "Slideshow"
+                fragment = SlideshowFragment()
             }
             else -> {
                 title = "Home"
@@ -94,13 +86,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportActionBar?.title = title
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
-    }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
     }
 }
