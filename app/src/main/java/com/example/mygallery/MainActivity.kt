@@ -10,7 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import com.example.mygallery.fragments.HomeFragment
 import com.example.mygallery.fragments.MessageFragment
+import com.example.mygallery.fragments.SpamFragment
+import com.example.mygallery.fragments.TrashFragment
 import com.google.android.material.navigation.NavigationView
 import com.example.mygallery.R
 
@@ -36,9 +40,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MessageFragment.newInstance("Inbox")).commit()
-            navView.setCheckedItem(R.id.nav_inbox)
-            supportActionBar?.title = "Inbox"
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment()).commit()
+            supportActionBar?.title = "Home"
+            navView.setCheckedItem(R.id.nav_home)
         }
 
         // Setup Spinner in header
@@ -56,22 +60,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        var title = ""
+        var title: String
+        val fragment: Fragment
+
         when (item.itemId) {
+            R.id.nav_home -> {
+                title = "Home"
+                fragment = HomeFragment()
+            }
             R.id.nav_inbox -> {
                 title = "Inbox"
+                fragment = MessageFragment.newInstance(title)
             }
             R.id.nav_outbox -> {
                 title = "Outbox"
+                fragment = MessageFragment.newInstance(title)
             }
             R.id.nav_trash -> {
                 title = "Trash"
+                fragment = TrashFragment()
             }
             R.id.nav_spam -> {
                 title = "Spam"
+                fragment = SpamFragment()
+            }
+            else -> {
+                title = "Home"
+                fragment = HomeFragment()
             }
         }
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, MessageFragment.newInstance(title)).commit()
+
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
         supportActionBar?.title = title
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
